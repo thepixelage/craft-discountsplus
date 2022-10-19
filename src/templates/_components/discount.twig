@@ -1,0 +1,24 @@
+{% import "_includes/forms" as forms %}
+<div id="advanced-discounts" class="hidden">
+    {{ forms.lightswitchField({
+        label: "Limit Per Item Discount to Multiples of Item Quantity"|t('commerce'),
+        instructions: "When enabled, \"Per Item\" discount amounts are applied only when total quantity reaches multiples of the value specified in \"Minimum Purchase Quantity\"."|t('commerce'),
+        id: 'multiplyTheBaseDiscountByPurchaseQty',
+        name: 'multiplyTheBaseDiscountByPurchaseQty',
+        value: discount.multiplyTheBaseDiscountByPurchaseQty,
+        on:discount.multiplyTheBaseDiscountByPurchaseQty,
+        errors: discount.getErrors('multiplyTheBaseDiscountByPurchaseQty'),
+    }) }}
+
+    {{ forms.textField({
+        label: "Limit Discount to Quantity"|t('commerce'),
+        instructions: "Set a maximum number of matching items that can receive the \"Per Item\" discount amount.  A zero value here will skip this action."|t('commerce'),
+        id: 'maximumDiscountItem',
+        name: 'maximumDiscountItem',
+        value: discount.maximumDiscountItem,
+        type: 'number',
+        min:0,
+        tip:'Set the "Maximum Purchase Quantity" to 0 to allow this discount to be matched regardless of the total quantity purchased.',
+        errors: discount.getErrors('maximumDiscountItem'),
+    }) }}
+</div>
