@@ -1,0 +1,44 @@
+{
+    "name": "thepixelage/discounts-plus",
+    "description": ".",
+    "type": "craft-plugin",
+    "version": "4.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "discounts plus"
+    ],
+    "support": {
+        "docs": "https://github.com/thepixelage/discounts-plus/blob/master/README.md",
+        "issues": "https://github.com/thepixelage/discounts-plus/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "thepixelage",
+            "homepage": "https://www.thepixelage.com"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^4.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "thepixelage\\discountsplus\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Discounts Plus",
+        "handle": "discounts-plus",
+        "developer": "thepixelage",
+        "developerUrl": "thepixelage.com",
+        "documentationUrl": "https://github.com/thepixelage/discounts-plus/blob/master/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/thepixelage/discounts-plus/master/CHANGELOG.md",
+        "components": {
+            "discountsPlusService": "Discounts"
+        },
+        "class": "thepixelage\\discountsplus\\DiscountsPlus"
+    }
+}
