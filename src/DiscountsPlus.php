@@ -10,22 +10,19 @@
 
 namespace thepixelage\discountsplus;
 
+use Craft;
+use craft\base\Plugin;
+use craft\commerce\adjusters\Discount as DiscountAdjuster;
+use craft\commerce\events\DiscountAdjustmentsEvent;
 use craft\commerce\events\DiscountEvent;
 use craft\commerce\models\Discount;
 use craft\commerce\services\Discounts;
 use craft\events\DefineBehaviorsEvent;
 use craft\i18n\PhpMessageSource;
-use thepixelage\discountsplus\records\Discount as DiscountRecord;
+use thepixelage\discountsplus\base\Services;
 use thepixelage\discountsplus\behaviours\DiscountBehavior;
 use thepixelage\discountsplus\services\Discounts as DiscountsPlusServiceService;
-
-use Craft;
-use craft\base\Plugin;
-use thepixelage\discountsplus\base\Services;
-use craft\events\PluginEvent;
-
 use yii\base\Event;
-use yii\db\Exception;
 
 /**
  * Class DiscountsPlus
@@ -81,11 +78,12 @@ class DiscountsPlus extends Plugin
         $this->_hookOnDiscountEditPage();
         $this->_registerOnDiscountBehavior();
         $this->_registerOnSaveDiscount();
+        $this->_registerAfterDiscountAdjustmentsCreated();
     }
 
     private function _registerTranslations(): void
     {
-        Craft::$app->i18n->translations['discounts-plus'] = [
+        Craft::$app->i18n->translations['discountsplus'] = [
             'class' => PhpMessageSource::class,
             'sourceLanguage' => 'en',
             'basePath' => __DIR__ . '/translations',
@@ -101,7 +99,7 @@ class DiscountsPlus extends Plugin
             ];
         });
         Craft::$app->view->hook('cp.commerce.discounts.edit.content', function(array &$context) {
-            return Craft::$app->view->renderTemplate('discounts-plus/_components/discount', [
+            return Craft::$app->view->renderTemplate('discountsplus/_components/discount', [
                 'discount' => $context['discount']
             ]);
         });
@@ -142,5 +140,21 @@ class DiscountsPlus extends Plugin
         );
     }
 
+    private function _registerAfterDiscountAdjustmentsCreated(): void
+    {
+        Event::on(
+            DiscountAdjuster::class,
+            DiscountAdjuster::EVENT_AFTER_DISCOUNT_ADJUSTMENTS_CREATED,
+            static function(DiscountAdjustmentsEvent $event) {
+                $order = $event->order;
+
+                /** @var Discount|DiscountBehavior $discount */
+                $discount = $event->discount;
+
+                $adjustments = $event->adjustments;
+                $newAdjustments = DiscountsPlus::getInstance()->discounts->recalculateDiscounts($order, $discount, $adjustments);
+                $event->adjustments = $newAdjustments;
+            });
+    }
 
 }

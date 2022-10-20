@@ -3,9 +3,9 @@
 namespace thepixelage\discountsplus\behaviours;
 
 
+use craft\commerce\models\Discount as DiscountModel;
 use thepixelage\discountsplus\records\Discount as DiscountPlusRecord;
 use yii\base\Behavior;
-use craft\commerce\models\Discount as DiscountModel;
 
 /**
  *

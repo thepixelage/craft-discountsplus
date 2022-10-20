@@ -10,12 +10,9 @@
 
 namespace thepixelage\discountsplus\migrations;
 
-use thepixelage\discountsplus\db\Table;
-use thepixelage\discountsplus\DiscountsPlus;
-
 use Craft;
-use craft\config\DbConfig;
 use craft\db\Migration;
+use thepixelage\discountsplus\db\Table;
 
 /**
  * @author    thepixelage
@@ -98,23 +95,7 @@ class Install extends Migration
      */
     protected function createIndexes()
     {
-        $this->createIndex(
-            $this->db->getIndexName(
-                '{{%discountsplus_discountsplusrecord}}',
-                'some_field',
-                true
-            ),
-            '{{%discountsplus_discountsplusrecord}}',
-            'some_field',
-            true
-        );
-        // Additional commands depending on the db driver
-        switch ($this->driver) {
-            case DbConfig::DRIVER_MYSQL:
-                break;
-            case DbConfig::DRIVER_PGSQL:
-                break;
-        }
+        $this->createIndex(null, Table::DISCOUNTS, ['id']);
     }
 
     /**
@@ -123,28 +104,22 @@ class Install extends Migration
     protected function addForeignKeys()
     {
         $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%discountsplus_discountsplusrecord}}', 'siteId'),
-            '{{%discountsplus_discountsplusrecord}}',
-            'siteId',
-            '{{%sites}}',
+            $this->db->getForeignKeyName(),
+            Table::DISCOUNTS,
+            'id',
+            '{{%commerce_discounts}}',
             'id',
             'CASCADE',
             'CASCADE'
         );
     }
 
-    /**
-     * @return void
-     */
-    protected function insertDefaultData()
-    {
-    }
 
     /**
      * @return void
      */
     protected function removeTables()
     {
-        $this->dropTableIfExists('{{%discountsplus_discountsplusrecord}}');
+        $this->dropTableIfExists(Table::DISCOUNTS);
     }
 }

@@ -1,6 +1,6 @@
 {
-    "name": "thepixelage/discounts-plus",
-    "description": ".",
+    "name": "thepixelage/craft-discountsplus",
+    "description": "Discount Plus is Craft Commerce plugin for add new feature on discount promotions",
     "type": "craft-plugin",
     "version": "4.0.0",
     "keywords": [
@@ -11,10 +11,10 @@
         "discounts plus"
     ],
     "support": {
-        "docs": "https://github.com/thepixelage/discounts-plus/blob/master/README.md",
-        "issues": "https://github.com/thepixelage/discounts-plus/issues"
+        "docs": "https://github.com/thepixelage/craft-discountsplus/blob/master/README.md",
+        "issues": "https://github.com/thepixelage/craft-discountsplus/issues"
     },
-    "license": "MIT",
+    "license": "proprietary",
     "authors": [
         {
             "name": "thepixelage",
@@ -31,11 +31,10 @@
     },
     "extra": {
         "name": "Discounts Plus",
-        "handle": "discounts-plus",
-        "developer": "thepixelage",
-        "developerUrl": "thepixelage.com",
+        "handle": "discountsplus",
+        "developer": "ThePixelAge",
+        "developerUrl": "https://www.thepixelage.com",
         "documentationUrl": "https://github.com/thepixelage/discounts-plus/blob/master/README.md",
-        "changelogUrl": "https://raw.githubusercontent.com/thepixelage/discounts-plus/master/CHANGELOG.md",
         "components": {
             "discountsPlusService": "Discounts"
         },

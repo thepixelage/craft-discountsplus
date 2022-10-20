@@ -10,6 +10,7 @@
 
 namespace thepixelage\discountsplus\services;
 
+use craft\base\Component;
 use craft\commerce\elements\Order;
 use craft\commerce\helpers\Currency;
 use craft\commerce\models\Discount;
@@ -17,24 +18,20 @@ use craft\commerce\Plugin;
 use craft\commerce\records\Discount as DiscountRecord;
 use thepixelage\discountsplus\behaviours\DiscountBehavior;
 use thepixelage\discountsplus\records\Discount as DiscountPlusRecord;
-
-use craft\base\Component;
 use yii\base\InvalidConfigException;
 use yii\db\Exception;
 
 /**
- * @author    thepixelage
+ * @author    Thepixelage
  * @package   DiscountsPlus
  * @since     4.0.0
  */
+
 class Discounts extends Component
 {
     // Public Methods
     // =========================================================================
 
-    /*
-     * @return array
-     */
     /**
      * @throws InvalidConfigException
      * @throws \Exception

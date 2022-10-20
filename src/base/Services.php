@@ -4,6 +4,9 @@ namespace thepixelage\discountsplus\base;
 use thepixelage\discountsplus\services\Discounts;
 use yii\base\InvalidConfigException;
 
+/**
+ * @property-read Discounts $discounts
+ */
 trait Services
 {
 
@@ -12,7 +15,7 @@ trait Services
      */
     public function getDiscounts(): Discounts
     {
-        return $this->get('redeemPointRates');
+        return $this->get('discounts');
     }
 
     private function _setComponents(): void
