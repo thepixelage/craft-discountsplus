@@ -6,7 +6,7 @@ use craft\db\Migration;
 use thepixelage\discountsplus\db\Table;
 
 /**
- * @author    thepixelage
+ * @author    ThePixelAge
  * @package   DiscountsPlus
  * @since     4.0.0
  */

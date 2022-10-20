@@ -4,7 +4,7 @@
  *
  * .
  *
- * @copyright Copyright (c) 2022 thepixelage
+ * @copyright Copyright (c) 2022 ThePixelAge
  */
 
 namespace thepixelage\discountsplus;
@@ -26,7 +26,7 @@ use yii\base\Event;
 /**
  * Class DiscountsPlus
  *
- * @author    thepixelage
+ * @author    ThePixelAge
  * @package   DiscountsPlus
  * @since     4.0.0
  *
