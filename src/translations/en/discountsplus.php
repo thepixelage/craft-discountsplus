@@ -1,6 +1,6 @@
 <?php
 /**
- * Discounts Plus plugin for Craft CMS 3.x
+ * Discounts Plus plugin for Craft CMS 4.x
  *
  * .
  *
@@ -9,10 +9,11 @@
  */
 
 /**
- * @author    thepixelage
+ * @author    ThePixelAge
  * @package   DiscountsPlus
  * @since     4.0.0
  */
 return [
-    'Discounts Plus plugin loaded' => 'Discounts Plus plugin loaded',
+    'Limit Discount to Quantity' => 'Limit Discount to Quantity',
+    'Limit Per Item Discount to Multiples of Item Quantity' => 'Limit Per Item Discount to Multiples of Item Quantity'
 ];

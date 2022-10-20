@@ -4,7 +4,6 @@
  *
  * .
  *
- * @link      thepixelage.com
  * @copyright Copyright (c) 2022 thepixelage
  */
 
@@ -74,6 +73,7 @@ class DiscountsPlus extends Plugin
         self::$plugin = $this;
 
 
+        $this->_setComponents();
         $this->_registerTranslations();
         $this->_hookOnDiscountEditPage();
         $this->_registerOnDiscountBehavior();
@@ -94,11 +94,11 @@ class DiscountsPlus extends Plugin
     {
         Craft::$app->view->hook('cp.commerce.discounts.edit', function(array &$context) {
             $context['tabs'][] = [
-                'label' => 'Advanced Discounts',
-                'url' => '#advanced-discounts'
+                'label' => 'Discounts Plus',
+                'url' => '#discounts-plus'
             ];
         });
-        Craft::$app->view->hook('cp.commerce.discounts.edit.content', function(array &$context) {
+        Craft::$app->view->hook('cp.commerce.discounts.edit.content', function(array $context) {
             return Craft::$app->view->renderTemplate('discountsplus/_components/discount', [
                 'discount' => $context['discount']
             ]);

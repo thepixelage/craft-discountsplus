@@ -1,24 +1,24 @@
 {% import "_includes/forms" as forms %}
-<div id="advanced-discounts" class="hidden">
+<div id="discounts-plus" class="hidden">
     {{ forms.lightswitchField({
-        label: "Limit Per Item Discount to Multiples of Item Quantity"|t('discountsplus'),
-        instructions: "When enabled, \"Per Item\" discount amounts are applied only when total quantity reaches multiples of the value specified in \"Minimum Purchase Quantity\"."|t('commerce'),
-        id: 'multiplyTheBaseDiscountByPurchaseQty',
-        name: 'multiplyTheBaseDiscountByPurchaseQty',
-        value: discount.multiplyTheBaseDiscountByPurchaseQty,
-        on:discount.multiplyTheBaseDiscountByPurchaseQty,
-        errors: discount.getErrors('multiplyTheBaseDiscountByPurchaseQty'),
+        label           : "Limit Per Item Discount to Multiples of Item Quantity"|t('discountsplus'),
+        instructions    : "When enabled, \"Per Item\" discount amounts are applied only when total quantity reaches multiples of the value specified in \"Minimum Purchase Quantity\"."|t('commerce'),
+        id              : 'isLimitPerItemDiscountsMultiples',
+        name            : 'isLimitPerItemDiscountsMultiples',
+        value           : discount.isLimitPerItemDiscountsMultiples,
+        on              : discount.isLimitPerItemDiscountsMultiples,
+        errors          : discount.getErrors('isLimitPerItemDiscountsMultiples'),
     }) }}
 
     {{ forms.textField({
-        label: "Limit Discount to Quantity"|t('discountsplus'),
-        instructions: "Set a maximum number of matching items that can receive the \"Per Item\" discount amount.  A zero value here will skip this action."|t('commerce'),
-        id: 'maximumDiscountItem',
-        name: 'maximumDiscountItem',
-        value: discount.maximumDiscountItem,
-        type: 'number',
-        min:0,
-        tip:'Set the "Maximum Purchase Quantity" to 0 to allow this discount to be matched regardless of the total quantity purchased.',
-        errors: discount.getErrors('maximumDiscountItem'),
+        label           : "Limit Discount to Quantity"|t('discountsplus'),
+        instructions    : "Set a maximum number of matching items that can receive the \"Per Item\" discount amount.  A zero value here will skip this action."|t('commerce'),
+        id              : 'limitDiscountsQuantity',
+        name            : 'limitDiscountsQuantity',
+        value           : discount.limitDiscountsQuantity,
+        type            : 'number',
+        min             : 0,
+        tip             : 'Set the "Maximum Purchase Quantity" to 0 to allow this discount to be matched regardless of the total quantity purchased.',
+        errors          : discount.getErrors('limitDiscountsQuantity'),
     }) }}
 </div>

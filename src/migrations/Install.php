@@ -1,13 +1,4 @@
 <?php
-/**
- * Discounts Plus plugin for Craft CMS 3.x
- *
- * .
- *
- * @link      thepixelage.com
- * @copyright Copyright (c) 2022 thepixelage
- */
-
 namespace thepixelage\discountsplus\migrations;
 
 use Craft;
@@ -27,7 +18,7 @@ class Install extends Migration
     /**
      * @var string The database driver to use
      */
-    public $driver;
+    public string $driver;
 
     // Public Methods
     // =========================================================================
@@ -43,7 +34,6 @@ class Install extends Migration
             $this->addForeignKeys();
             // Refresh the db schema caches
             Craft::$app->db->schema->refresh();
-            $this->insertDefaultData();
         }
 
         return true;
@@ -93,7 +83,7 @@ class Install extends Migration
     /**
      * @return void
      */
-    protected function createIndexes()
+    protected function createIndexes(): void
     {
         $this->createIndex(null, Table::DISCOUNTS, ['id']);
     }
@@ -101,7 +91,7 @@ class Install extends Migration
     /**
      * @return void
      */
-    protected function addForeignKeys()
+    protected function addForeignKeys(): void
     {
         $this->addForeignKey(
             $this->db->getForeignKeyName(),
@@ -118,7 +108,7 @@ class Install extends Migration
     /**
      * @return void
      */
-    protected function removeTables()
+    protected function removeTables(): void
     {
         $this->dropTableIfExists(Table::DISCOUNTS);
     }

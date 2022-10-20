@@ -3,6 +3,7 @@
 namespace thepixelage\discountsplus\records;
 
 use craft\db\ActiveRecord;
+use thepixelage\discountsplus\db\Table;
 
 /**
  * @property int $id
@@ -13,6 +14,6 @@ class Discount extends ActiveRecord
 {
     public static function tableName(): string
     {
-        return '{{%tpa_discounts_addition}}';
+        return Table::DISCOUNTS;
     }
 }
