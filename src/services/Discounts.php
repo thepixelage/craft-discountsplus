@@ -14,7 +14,7 @@ use yii\base\InvalidConfigException;
 use yii\db\Exception;
 
 /**
- * @author    Thepixelage
+ * @author    ThePixelAge
  * @package   DiscountsPlus
  * @since     4.0.0
  */
@@ -84,7 +84,7 @@ class Discounts extends Component
 
             $countDiscountedItemQty += $currentLineItemQtyToDiscount;
 
-            //do update the amount discount
+            //do update the amount discount, do same as commerce how to do it.
             $lineItemHashId = spl_object_hash($adjustment->lineItem);
             $discountAmountPerItemPreDiscounts = 0;
             $amountPerItem = Currency::round($discount->perItemDiscount);
