@@ -1,14 +1,16 @@
 {% import "_includes/forms" as forms %}
 <div id="discounts-plus" class="hidden">
-    {{ forms.lightswitchField({
-        label           : "Limit Per Item Discount to Multiples of Item Quantity"|t('discountsplus'),
-        instructions    : "When enabled, \"Per Item\" discount amounts are applied only when total quantity reaches multiples of the value specified in \"Minimum Purchase Quantity\"."|t('commerce'),
-        id              : 'isLimitPerItemDiscountsMultiples',
-        name            : 'isLimitPerItemDiscountsMultiples',
-        value           : discount.isLimitPerItemDiscountsMultiples,
-        on              : discount.isLimitPerItemDiscountsMultiples,
-        errors          : discount.getErrors('isLimitPerItemDiscountsMultiples'),
+    {{ forms.selectField({
+        label           : "Per Item Custom Behavior"|t('discountsplus'),
+        instructions    : "Choose whether custome behavior for the perItem Discount, put null for deactive"|t('discountsplus'),
+        id              : 'customPerItemDiscountBehavior',
+        name            : 'customPerItemDiscountBehavior',
+        value           : discount.customPerItemDiscountBehavior,
+        on              : discount.customPerItemDiscountBehavior,
+        options         : perItemDiscountCustomBehaviors,
+        errors          : discount.getErrors('customPerItemDiscountBehavior'),
     }) }}
+
 
     {{ forms.textField({
         label           : "Limit Discount to Quantity"|t('discountsplus'),

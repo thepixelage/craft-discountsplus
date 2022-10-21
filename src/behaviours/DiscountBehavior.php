@@ -9,42 +9,42 @@ use yii\base\Behavior;
 
 /**
  *
- * @property bool $isLimitPerItemDiscountsMultiples
+ * @property string $customPerItemDiscountBehavior
  * @property int $limitDiscountsQuantity
  */
 class DiscountBehavior extends Behavior
 {
-    private bool $_isLimitPerItemDiscountsMultiples;
+    private ?string $_customPerItemDiscountBehavior;
     private int $_limitDiscountsQuantity;
     
-    public function getIsLimitPerItemDiscountsMultiples(): bool
+    public function getCustomPerItemDiscountBehavior(): ?string
     {
         /** @var DiscountModel $discount */
         $discount = $this->owner;
-        if (isset($this->_isLimitPerItemDiscountsMultiples)) {
-            return $this->_isLimitPerItemDiscountsMultiples;
+        if (isset($this->_customPerItemDiscountBehavior)) {
+            return $this->_customPerItemDiscountBehavior;
         }
 
         if (!$discount->id) {
-            return 0;
+            return null;
         }
 
         $record = DiscountPlusRecord::findOne($discount->id);
         if(!$record) {
-            $this->_isLimitPerItemDiscountsMultiples = false;
+            $this->_customPerItemDiscountBehavior = null;
             $this->_limitDiscountsQuantity = 0;
-            return $this->_isLimitPerItemDiscountsMultiples;
+            return $this->_customPerItemDiscountBehavior;
         }
 
         $this->_limitDiscountsQuantity = $record->limitDiscountsQuantity ?: 0;
-        $this->_isLimitPerItemDiscountsMultiples = $record->isLimitPerItemDiscountsMultiples;
+        $this->_customPerItemDiscountBehavior = $record->customPerItemDiscountBehavior;
 
-        return $this->_isLimitPerItemDiscountsMultiples;
+        return $this->_customPerItemDiscountBehavior;
     }
 
-    public function setIsLimitPerItemDiscountsMultiples($val): void
+    public function setCustomPerItemDiscountBehavior($val): void
     {
-        $this->_isLimitPerItemDiscountsMultiples = $val;
+        $this->_customPerItemDiscountBehavior = $val;
     }
 
 
@@ -65,12 +65,12 @@ class DiscountBehavior extends Behavior
 
         $record = DiscountPlusRecord::findOne($discount->id);
         if(!$record) {
-            $this->_isLimitPerItemDiscountsMultiples = false;
+            $this->_customPerItemDiscountBehavior = false;
             $this->_limitDiscountsQuantity = 0;
             return $this->_limitDiscountsQuantity;
         }
         $this->_limitDiscountsQuantity = $record->limitDiscountsQuantity ?: 0;
-        $this->_isLimitPerItemDiscountsMultiples = $record->isLimitPerItemDiscountsMultiples;
+        $this->_customPerItemDiscountBehavior = $record->customPerItemDiscountBehavior;
 
         return $this->_limitDiscountsQuantity;
     }

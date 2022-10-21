@@ -22,6 +22,7 @@ use thepixelage\discountsplus\base\Services;
 use thepixelage\discountsplus\behaviours\DiscountBehavior;
 use thepixelage\discountsplus\services\Discounts as DiscountsPlusServiceService;
 use yii\base\Event;
+use thepixelage\discountsplus\records\Discount as DiscountRecord;
 
 /**
  * Class DiscountsPlus
@@ -99,7 +100,14 @@ class DiscountsPlus extends Plugin
             ];
         });
         Craft::$app->view->hook('cp.commerce.discounts.edit.content', function(array $context) {
+            $perItemDiscountCustomBehaviors = [
+                null => '',
+                DiscountRecord::DISCOUNT_EVERY_N_BEHAVIOR => Craft::t('discountsplus','Discount Every Nth items'),
+                DiscountRecord::LIMIT_DISCOUNT_MULTIPLE_BY_N_BEHAVIOR => Craft::t('discountsplus','Limit Per Item Discount to Multiples of Item Quantity'),
+
+            ];
             return Craft::$app->view->renderTemplate('discountsplus/_components/discount', [
+                'perItemDiscountCustomBehaviors' => $perItemDiscountCustomBehaviors,
                 'discount' => $context['discount']
             ]);
         });
@@ -131,10 +139,10 @@ class DiscountsPlus extends Plugin
                 if (!$request->isCpRequest) {
                     return;
                 }
-                $isLimitPerItemDiscountsMultiples = (boolean)$request->getBodyParam('isLimitPerItemDiscountsMultiples');
+                $customPerItemDiscountBehavior = $request->getBodyParam('customPerItemDiscountBehavior');
                 $limitDiscountsQuantity = abs((int)$request->getBodyParam('limitDiscountsQuantity'));
 
-                $discount = DiscountsPlus::getInstance()?->getDiscounts()->saveDiscounts($event->discount, $isLimitPerItemDiscountsMultiples, $limitDiscountsQuantity);
+                $discount = DiscountsPlus::getInstance()?->getDiscounts()->saveDiscounts($event->discount, $customPerItemDiscountBehavior, $limitDiscountsQuantity);
                 $event->discount = $discount;
             }
         );

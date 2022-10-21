@@ -67,7 +67,7 @@ class Install extends Migration
                 Table::DISCOUNTS,
                 [
                     'id' => $this->primaryKey(),
-                    'isLimitPerItemDiscountsMultiples' => $this->boolean()->defaultValue(false),
+                    'customPerItemDiscountBehavior' => $this->string()->null(),
                     'limitDiscountsQuantity' => $this->integer()->null(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),

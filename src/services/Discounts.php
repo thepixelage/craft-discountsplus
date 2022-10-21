@@ -6,6 +6,7 @@ use craft\base\Component;
 use craft\commerce\elements\Order;
 use craft\commerce\helpers\Currency;
 use craft\commerce\models\Discount;
+use craft\commerce\models\OrderAdjustment;
 use craft\commerce\Plugin;
 use craft\commerce\records\Discount as DiscountRecord;
 use thepixelage\discountsplus\behaviours\DiscountBehavior;
@@ -30,8 +31,7 @@ class Discounts extends Component
      */
     public function recalculateDiscounts(Order $order, Discount|DiscountBehavior $discount, $adjustments): array
     {
-
-        if (!$discount->getLimitDiscountsQuantity() && !$discount->getIsLimitPerItemDiscountsMultiples()) {
+        if (!$discount->getLimitDiscountsQuantity() && !$discount->getCustomPerItemDiscountBehavior()) {
             return $adjustments;
         }
 
@@ -63,26 +63,37 @@ class Discounts extends Component
 
 
         $totalQtyToDiscounted = $discount->getLimitDiscountsQuantity() ? min($totalMatchingItemsOnOrder, $discount->getLimitDiscountsQuantity()) : $totalMatchingItemsOnOrder;
-        if ($discount->getIsLimitPerItemDiscountsMultiples()) {
+        if ($discount->getCustomPerItemDiscountBehavior() === DiscountPlusRecord::LIMIT_DISCOUNT_MULTIPLE_BY_N_BEHAVIOR) {
             $reminderOfTotalQtyToDiscounted = $totalQtyToDiscounted % $discount->purchaseQty;
             $totalQtyToDiscounted = $reminderOfTotalQtyToDiscounted === 0 ? $totalQtyToDiscounted : $totalQtyToDiscounted - $reminderOfTotalQtyToDiscounted;
+        }elseif ($discount->getCustomPerItemDiscountBehavior() === DiscountPlusRecord::DISCOUNT_EVERY_N_BEHAVIOR) {
+            $totalQtyToDiscounted = floor($totalQtyToDiscounted/$discount->purchaseQty);
         }
 
         $newAdjustments = [];
-        $countDiscountedItemQty = 0;
+        $countDiscountItemQty = 0;
+        $countItemQty  = 0;
         foreach ($adjustments as $adjustment) {
+            /** @var OrderAdjustment $adjustment */
             if (!$adjustment->getLineItem()) {
                 $newAdjustments[] = $adjustment;
                 continue;
             }
 
-            if ($countDiscountedItemQty >= $totalQtyToDiscounted) {
+            if ($countDiscountItemQty >= $totalQtyToDiscounted) {
                 continue;
             }
 
-            $currentLineItemQtyToDiscount = (($adjustment->lineItem->qty + $countDiscountedItemQty) > $totalQtyToDiscounted) ? ($totalQtyToDiscounted - $countDiscountedItemQty) : ($adjustment->lineItem->qty);
+            if ($discount->getCustomPerItemDiscountBehavior() !== DiscountPlusRecord::DISCOUNT_EVERY_N_BEHAVIOR) {
+                $currentLineItemQtyToDiscount = (($adjustment->lineItem->qty + $countDiscountItemQty) > $totalQtyToDiscounted) ? ($totalQtyToDiscounted - $countDiscountItemQty) : ($adjustment->lineItem->qty);
+            } else {
+                $numberOfItemGetDiscountForCurrentLineItem = floor(($adjustment->lineItem->qty + $countItemQty)/$discount->purchaseQty) - $countDiscountItemQty;
+                $currentLineItemQtyToDiscount = $numberOfItemGetDiscountForCurrentLineItem + $countDiscountItemQty > $totalQtyToDiscounted ? ($totalQtyToDiscounted - $countDiscountItemQty) : $numberOfItemGetDiscountForCurrentLineItem;
+            }
 
-            $countDiscountedItemQty += $currentLineItemQtyToDiscount;
+            $countDiscountItemQty += $currentLineItemQtyToDiscount;
+            $countItemQty += $adjustment->lineItem->qty;
+
 
             //do update the amount discount, do same as commerce how to do it.
             $lineItemHashId = spl_object_hash($adjustment->lineItem);
@@ -126,7 +137,7 @@ class Discounts extends Component
     /**
      * @throws Exception
      */
-    public function saveDiscounts(Discount|DiscountBehavior $discount, $isLimitPerItemDiscountsMultiples, $limitDiscountsQuantity): DiscountBehavior|Discount
+    public function saveDiscounts(Discount|DiscountBehavior $discount, $customPerItemDiscountBehavior, $limitDiscountsQuantity): DiscountBehavior|Discount
     {
         $record = DiscountPlusRecord::findOne($discount->id);
         if (!$record) {
@@ -134,13 +145,13 @@ class Discounts extends Component
         }
         $record->id = $discount->id;
         $record->limitDiscountsQuantity = $limitDiscountsQuantity;
-        $record->isLimitPerItemDiscountsMultiples = $isLimitPerItemDiscountsMultiples;
+        $record->customPerItemDiscountBehavior = $customPerItemDiscountBehavior;
         if (!$record->save()) {
             throw new Exception('Failed to save discount');
         }
 
 
-        $discount->setIsLimitPerItemDiscountsMultiples($isLimitPerItemDiscountsMultiples);
+        $discount->setCustomPerItemDiscountBehavior($customPerItemDiscountBehavior);
         $discount->setLimitDiscountsQuantity($limitDiscountsQuantity);
         return $discount;
     }
