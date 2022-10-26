@@ -1,8 +1,8 @@
 {% import "_includes/forms" as forms %}
 <div id="discounts-plus" class="hidden">
     {{ forms.selectField({
-        label           : "Per Item Custom Behavior"|t('discountsplus'),
-        instructions    : "Choose whether custome behavior for the perItem Discount, put null for deactive"|t('discountsplus'),
+        label           : "\“Per Item\” Discount Amount Behavior"|t('discountsplus'),
+        instructions    : "Choose how the specified “Per Item Discount Amount” should be applied to the line items"|t('discountsplus'),
         id              : 'customPerItemDiscountBehavior',
         name            : 'customPerItemDiscountBehavior',
         value           : discount.customPerItemDiscountBehavior,

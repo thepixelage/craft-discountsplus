@@ -101,9 +101,9 @@ class DiscountsPlus extends Plugin
         });
         Craft::$app->view->hook('cp.commerce.discounts.edit.content', function(array $context) {
             $perItemDiscountCustomBehaviors = [
-                null => '',
-                DiscountRecord::DISCOUNT_EVERY_N_BEHAVIOR => Craft::t('discountsplus','Discount Every Nth items'),
-                DiscountRecord::LIMIT_DISCOUNT_MULTIPLE_BY_N_BEHAVIOR => Craft::t('discountsplus','Limit Per Item Discount to Multiples of Item Quantity'),
+                DiscountRecord::DISCOUNT_DEFAULT_BEHAVIOR => Craft::t('discountsplus','Apply discount amount to each item'),
+                DiscountRecord::DISCOUNT_BEHAVIOR_EACH_ITEMS_IN_N_STEPS => Craft::t('discountsplus','Apply discount amount to each item in steps of N items'),
+                DiscountRecord::DISCOUNT_BEHAVIOR_EVERY_NTH => Craft::t('discountsplus','Apply discount amount to every Nth item only'),
 
             ];
             return Craft::$app->view->renderTemplate('discountsplus/_components/discount', [

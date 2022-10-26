@@ -31,7 +31,7 @@ class Discounts extends Component
      */
     public function recalculateDiscounts(Order $order, Discount|DiscountBehavior $discount, $adjustments): array
     {
-        if (!$discount->getLimitDiscountsQuantity() && !$discount->getCustomPerItemDiscountBehavior()) {
+        if (!$discount->getLimitDiscountsQuantity() && $discount->getCustomPerItemDiscountBehavior() === DiscountPlusRecord::DISCOUNT_DEFAULT_BEHAVIOR) {
             return $adjustments;
         }
 
@@ -63,10 +63,10 @@ class Discounts extends Component
 
 
         $totalQtyToDiscounted = $discount->getLimitDiscountsQuantity() ? min($totalMatchingItemsOnOrder, $discount->getLimitDiscountsQuantity()) : $totalMatchingItemsOnOrder;
-        if ($discount->getCustomPerItemDiscountBehavior() === DiscountPlusRecord::LIMIT_DISCOUNT_MULTIPLE_BY_N_BEHAVIOR) {
+        if ($discount->getCustomPerItemDiscountBehavior() === DiscountPlusRecord::DISCOUNT_BEHAVIOR_EACH_ITEMS_IN_N_STEPS) {
             $reminderOfTotalQtyToDiscounted = $totalQtyToDiscounted % $discount->purchaseQty;
             $totalQtyToDiscounted = $reminderOfTotalQtyToDiscounted === 0 ? $totalQtyToDiscounted : $totalQtyToDiscounted - $reminderOfTotalQtyToDiscounted;
-        }elseif ($discount->getCustomPerItemDiscountBehavior() === DiscountPlusRecord::DISCOUNT_EVERY_N_BEHAVIOR) {
+        }elseif ($discount->getCustomPerItemDiscountBehavior() === DiscountPlusRecord::DISCOUNT_BEHAVIOR_EVERY_NTH) {
             $totalQtyToDiscounted = floor($totalQtyToDiscounted/$discount->purchaseQty);
         }
 
@@ -84,7 +84,7 @@ class Discounts extends Component
                 continue;
             }
 
-            if ($discount->getCustomPerItemDiscountBehavior() !== DiscountPlusRecord::DISCOUNT_EVERY_N_BEHAVIOR) {
+            if ($discount->getCustomPerItemDiscountBehavior() !== DiscountPlusRecord::DISCOUNT_BEHAVIOR_EVERY_NTH) {
                 $currentLineItemQtyToDiscount = (($adjustment->lineItem->qty + $countDiscountItemQty) > $totalQtyToDiscounted) ? ($totalQtyToDiscounted - $countDiscountItemQty) : ($adjustment->lineItem->qty);
             } else {
                 $numberOfItemGetDiscountForCurrentLineItem = floor(($adjustment->lineItem->qty + $countItemQty)/$discount->purchaseQty) - $countDiscountItemQty;
@@ -139,6 +139,13 @@ class Discounts extends Component
      */
     public function saveDiscounts(Discount|DiscountBehavior $discount, $customPerItemDiscountBehavior, $limitDiscountsQuantity): DiscountBehavior|Discount
     {
+        if (!in_array($customPerItemDiscountBehavior, [
+            DiscountPlusRecord::DISCOUNT_DEFAULT_BEHAVIOR,
+            DiscountPlusRecord::DISCOUNT_BEHAVIOR_EACH_ITEMS_IN_N_STEPS,
+            DiscountPlusRecord::DISCOUNT_BEHAVIOR_EVERY_NTH,
+        ], true)) {
+            throw new Exception('Wrong Custom Behavior value');
+        }
         $record = DiscountPlusRecord::findOne($discount->id);
         if (!$record) {
             $record = new DiscountPlusRecord();

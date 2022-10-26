@@ -12,8 +12,9 @@ use thepixelage\discountsplus\db\Table;
  */
 class Discount extends ActiveRecord
 {
-    public const DISCOUNT_EVERY_N_BEHAVIOR = 'discountEveryNItems';
-    public const LIMIT_DISCOUNT_MULTIPLE_BY_N_BEHAVIOR = 'limitDiscountMultipleByN';
+    public const DISCOUNT_DEFAULT_BEHAVIOR = 'default';
+    public const DISCOUNT_BEHAVIOR_EACH_ITEMS_IN_N_STEPS = 'discountEachItemInNSteps';
+    public const DISCOUNT_BEHAVIOR_EVERY_NTH = 'discountEveryNth';
 
     public static function tableName(): string
     {
