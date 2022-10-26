@@ -80,6 +80,7 @@ class DiscountsPlus extends Plugin
         $this->_registerOnDiscountBehavior();
         $this->_registerOnSaveDiscount();
         $this->_registerAfterDiscountAdjustmentsCreated();
+        $this->_registerOnDeleteDiscount();
     }
 
     private function _registerTranslations(): void
@@ -142,10 +143,23 @@ class DiscountsPlus extends Plugin
                 $customPerItemDiscountBehavior = $request->getBodyParam('customPerItemDiscountBehavior');
                 $limitDiscountsQuantity = abs((int)$request->getBodyParam('limitDiscountsQuantity'));
 
-                $discount = DiscountsPlus::getInstance()?->getDiscounts()->saveDiscounts($event->discount, $customPerItemDiscountBehavior, $limitDiscountsQuantity);
+                $discount = DiscountsPlus::getInstance()?->getDiscounts()->saveDiscount($event->discount, $customPerItemDiscountBehavior, $limitDiscountsQuantity);
                 $event->discount = $discount;
             }
         );
+    }
+
+    private function _registerOnDeleteDiscount(): void
+    {
+          Event::on(
+              Discounts::class,
+              Discounts::EVENT_AFTER_DELETE_DISCOUNT,
+              static function(DiscountEvent $event) {
+                    // @var Discount $discount
+                    $discount = $event->discount;
+                    DiscountsPlus::getInstance()->discounts->deleteDiscount($discount);
+              }
+          );
     }
 
     private function _registerAfterDiscountAdjustmentsCreated(): void

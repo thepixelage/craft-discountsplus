@@ -13,6 +13,7 @@ use thepixelage\discountsplus\behaviours\DiscountBehavior;
 use thepixelage\discountsplus\records\Discount as DiscountPlusRecord;
 use yii\base\InvalidConfigException;
 use yii\db\Exception;
+use yii\db\StaleObjectException;
 
 /**
  * @author    ThePixelAge
@@ -137,7 +138,7 @@ class Discounts extends Component
     /**
      * @throws Exception
      */
-    public function saveDiscounts(Discount|DiscountBehavior $discount, $customPerItemDiscountBehavior, $limitDiscountsQuantity): DiscountBehavior|Discount
+    public function saveDiscount(Discount|DiscountBehavior $discount, $customPerItemDiscountBehavior, $limitDiscountsQuantity): DiscountBehavior|Discount
     {
         if (!in_array($customPerItemDiscountBehavior, [
             DiscountPlusRecord::DISCOUNT_DEFAULT_BEHAVIOR,
@@ -161,5 +162,17 @@ class Discounts extends Component
         $discount->setCustomPerItemDiscountBehavior($customPerItemDiscountBehavior);
         $discount->setLimitDiscountsQuantity($limitDiscountsQuantity);
         return $discount;
+    }
+
+    /**
+     * @throws StaleObjectException
+     */
+    public function deleteDiscount(Discount $discount):bool
+    {
+        $record = DiscountPlusRecord::findOne($discount->id);
+        if (!$record) {
+            return false;
+        }
+        return $record->delete();
     }
 }
