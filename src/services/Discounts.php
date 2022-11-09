@@ -44,6 +44,10 @@ class Discounts extends Component
             return $adjustments;
         }
 
+        if (!$discount->purchaseQty && ($discount->getCustomPerItemDiscountBehavior() === DiscountPlusRecord::DISCOUNT_BEHAVIOR_EACH_ITEMS_IN_N_STEPS || $discount->getCustomPerItemDiscountBehavior() === DiscountPlusRecord::DISCOUNT_BEHAVIOR_EVERY_NTH )) {
+            return $adjustments;
+        }
+
         // get the discount total qty to get discounted
 
         $totalMatchingItemsOnOrder = 0;
