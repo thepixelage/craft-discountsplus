@@ -2,6 +2,7 @@
 
 namespace thepixelage\discountsplus\services;
 
+use Craft;
 use craft\base\Component;
 use craft\commerce\elements\Order;
 use craft\commerce\helpers\Currency;
@@ -142,29 +143,18 @@ class Discounts extends Component
     /**
      * @throws Exception
      */
-    public function saveDiscount(Discount|DiscountBehavior $discount, $customPerItemDiscountBehavior, $limitDiscountsQuantity): DiscountBehavior|Discount
+    public function saveDiscount(Discount|DiscountBehavior $discount): DiscountBehavior|Discount
     {
-        if (!in_array($customPerItemDiscountBehavior, [
-            DiscountPlusRecord::DISCOUNT_DEFAULT_BEHAVIOR,
-            DiscountPlusRecord::DISCOUNT_BEHAVIOR_EACH_ITEMS_IN_N_STEPS,
-            DiscountPlusRecord::DISCOUNT_BEHAVIOR_EVERY_NTH,
-        ], true)) {
-            throw new Exception('Wrong Custom Behavior value');
-        }
         $record = DiscountPlusRecord::findOne($discount->id);
         if (!$record) {
             $record = new DiscountPlusRecord();
         }
         $record->id = $discount->id;
-        $record->limitDiscountsQuantity = $limitDiscountsQuantity;
-        $record->customPerItemDiscountBehavior = $customPerItemDiscountBehavior;
+        $record->limitDiscountsQuantity = $discount->limitDiscountsQuantity;
+        $record->customPerItemDiscountBehavior = $discount->customPerItemDiscountBehavior;
         if (!$record->save()) {
             throw new Exception('Failed to save discount');
         }
-
-
-        $discount->setCustomPerItemDiscountBehavior($customPerItemDiscountBehavior);
-        $discount->setLimitDiscountsQuantity($limitDiscountsQuantity);
         return $discount;
     }
 

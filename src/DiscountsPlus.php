@@ -17,12 +17,13 @@ use craft\commerce\events\DiscountEvent;
 use craft\commerce\models\Discount;
 use craft\commerce\services\Discounts;
 use craft\events\DefineBehaviorsEvent;
+use craft\events\DefineRulesEvent;
 use craft\i18n\PhpMessageSource;
 use thepixelage\discountsplus\base\Services;
 use thepixelage\discountsplus\behaviours\DiscountBehavior;
+use thepixelage\discountsplus\records\Discount as DiscountRecord;
 use thepixelage\discountsplus\services\Discounts as DiscountsPlusServiceService;
 use yii\base\Event;
-use thepixelage\discountsplus\records\Discount as DiscountRecord;
 
 /**
  * Class DiscountsPlus
@@ -78,7 +79,9 @@ class DiscountsPlus extends Plugin
         $this->_registerTranslations();
         $this->_hookOnDiscountEditPage();
         $this->_registerOnDiscountBehavior();
-        $this->_registerOnSaveDiscount();
+        $this->_registerOnBeforeSaveDiscount();
+        $this->_registerOnDiscountDefineRules();
+        $this->_registerOnAfterSaveDiscount();
         $this->_registerAfterDiscountAdjustmentsCreated();
         $this->_registerOnDeleteDiscount();
     }
@@ -127,7 +130,58 @@ class DiscountsPlus extends Plugin
         );
     }
 
-    private function _registerOnSaveDiscount(): void
+    private function _registerOnBeforeSaveDiscount(): void
+    {
+        Event::on(
+            Discounts::class,
+            Discounts::EVENT_BEFORE_SAVE_DISCOUNT,
+            static function(DiscountEvent $event) {
+                $request = Craft::$app->request;
+                if ($request->isConsoleRequest) {
+                    return;
+                }
+                if (!$request->isCpRequest) {
+                    return;
+                }
+                $customPerItemDiscountBehavior = $request->getBodyParam('customPerItemDiscountBehavior');
+                $limitDiscountsQuantity = abs((int)$request->getBodyParam('limitDiscountsQuantity'));
+
+                /** @var Discount|DiscountBehavior $discount */
+                $discount = $event->discount;
+                $discount->setCustomPerItemDiscountBehavior($customPerItemDiscountBehavior);
+                $discount->setLimitDiscountsQuantity($limitDiscountsQuantity);
+                $event->discount = $discount;
+
+            }
+        );
+    }
+
+    public function _registerOnDiscountDefineRules(): void
+    {
+        Event::on(
+            Discount::class,
+            Discount::EVENT_DEFINE_RULES,
+            static function(DefineRulesEvent $event) {
+                /** @var Discount|DiscountBehavior $discount */
+                $discount = $event->sender;
+                if ($discount->customPerItemDiscountBehavior === DiscountRecord::DISCOUNT_BEHAVIOR_EACH_ITEMS_IN_N_STEPS || $discount->customPerItemDiscountBehavior === DiscountRecord::DISCOUNT_BEHAVIOR_EVERY_NTH) {
+                    $event->rules[] = [
+                        'purchaseQty', 'compare', 'operator'=>'>', 'compareValue'=>0, 'message' => Craft::t('discountsplus', 'Purchase Qty cannot be zero for non default Discounts Plus custom behavior')
+                    ];
+                    $event->rules[] = [
+                        'customPerItemDiscountBehavior', 'in', 'range' => [
+                            DiscountRecord::DISCOUNT_DEFAULT_BEHAVIOR,
+                            DiscountRecord::DISCOUNT_BEHAVIOR_EACH_ITEMS_IN_N_STEPS,
+                            DiscountRecord::DISCOUNT_BEHAVIOR_EVERY_NTH,
+                        ]
+                    ];
+                }
+
+            }
+        );
+    }
+
+    private function _registerOnAfterSaveDiscount(): void
     {
         Event::on(
             Discounts::class,
@@ -140,10 +194,7 @@ class DiscountsPlus extends Plugin
                 if (!$request->isCpRequest) {
                     return;
                 }
-                $customPerItemDiscountBehavior = $request->getBodyParam('customPerItemDiscountBehavior');
-                $limitDiscountsQuantity = abs((int)$request->getBodyParam('limitDiscountsQuantity'));
-
-                $discount = DiscountsPlus::getInstance()?->getDiscounts()->saveDiscount($event->discount, $customPerItemDiscountBehavior, $limitDiscountsQuantity);
+                $discount = DiscountsPlus::getInstance()?->getDiscounts()->saveDiscount($event->discount);
                 $event->discount = $discount;
             }
         );
